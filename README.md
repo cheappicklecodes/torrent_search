@@ -13,6 +13,7 @@ Search multiple indexers in parallel, browse deduplicated results, and download 
 <p align="center">
   <img src="content.png" alt="Torrent Searcher CLI" width="700">
 </p>
+
 ## ✨ Features
 
 * ⚡ Parallel searching across multiple indexers
