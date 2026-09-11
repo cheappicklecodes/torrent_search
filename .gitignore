@@ -1,0 +1,25 @@
+# downloads and torrent files — never commit these
+downloads/
+*.torrent
+*.magnet
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ide
+.vscode/
+.idea/
+*.swp
+
+# os
+.DS_Store
+Thumbs.db
+
+# local config
+config.local.yaml
