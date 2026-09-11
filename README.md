@@ -1,230 +1,308 @@
-Installation
-Prerequisites
-Python 3.9–3.11 (libtorrent wheels don't exist for 3.12+ on Windows yet — check with python --version)
+# 🔎 Torrent Searcher
 
-Windows / Linux / macOS
+A fast, terminal-based torrent search and download tool written in Python.
 
-~50 MB disk for the tool itself
+Search multiple indexers in parallel, browse deduplicated results, and download selected torrents directly from the command line.
 
-Step 1 — install Python (if you don't have it)
-Windows: download from python.org/downloads → get 3.11.x → run installer → check "Add python.exe to PATH" → Install Now.
+> **For legitimate use only.** Download and share only content you have the legal right to access.
 
-Verify:
+---
 
-text
+## ✨ Features
+
+* ⚡ Parallel searching across multiple indexers
+* 🔎 Simple interactive search
+* 📊 Rich terminal result tables
+* 🧹 Automatic deduplication using torrent infohashes
+* 🌱 Results ranked by seeders
+* 📥 Built-in BitTorrent downloading
+* 📈 Live progress, speed, ETA, peers, and seeds
+* 📄 Paginated results
+* 🖥️ Windows, Linux, and macOS support
+
+---
+
+## 📋 Requirements
+
+* **Python 3.9–3.11**
+* Windows, Linux, or macOS
+* Internet connection
+* ~50 MB disk space
+
+> **Python 3.11 is recommended**, particularly on Windows, because compatible `libtorrent` wheels may not be available for newer Python versions.
+
+Check your Python version:
+
+```bash
 python --version
-Should print Python 3.11.x.
+```
 
-Linux (Debian/Ubuntu):
+---
 
-bash
-sudo apt update && sudo apt install python3 python3-pip
-macOS:
+# 🚀 Installation
 
-bash
-brew install python@3.11
-Step 2 — get the code
-Option A — clone from GitHub:
+## 1. Install Python
 
-bash
+Download Python 3.11 from:
+
+[python.org/downloads](https://www.python.org/downloads/?utm_source=chatgpt.com)
+
+On Windows, make sure **Add python.exe to PATH** is enabled during installation.
+
+---
+
+## 2. Clone the Repository
+
+```bash
 git clone https://github.com/YOUR_USERNAME/torrent-search.git
 cd torrent-search
-Option B — download ZIP:
-On the GitHub repo page → green Code button → Download ZIP → extract → open terminal in that folder.
+```
 
-Step 3 — create a virtual environment (recommended)
-Keeps the tool's dependencies separate from your system Python. If something breaks, delete the folder and start clean.
+Alternatively, download the repository as a ZIP from GitHub and extract it.
 
-Windows:
+---
 
-bash
+## 3. Create a Virtual Environment
+
+### Windows
+
+```bash
 python -m venv venv
 venv\Scripts\activate
-Linux / macOS:
+```
 
-bash
+### Linux / macOS
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
-You'll know it worked when your prompt shows (venv) at the start.
+```
 
-Step 4 — install dependencies
-bash
+---
+
+## 4. Install Dependencies
+
+```bash
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-If libtorrent fails to install (common on Python 3.12+, or older pip):
+```
 
-Try in order:
+If `libtorrent` fails to install on Windows, try:
 
-bash
-pip install --upgrade pip
-pip install libtorrent
-If that still fails on Windows:
-
-bash
+```bash
 pip install libtorrent-binary
-Then edit download.py line ~7:
+```
 
-python
+Then change the import in `download.py` if required:
+
+```python
 import libtorrent as lt
-→
+```
 
-python
+to:
+
+```python
 import libtorrent_binary as lt
-If libtorrent won't install at all: the search half still works. Skip the download commands — you can still search indexers. Only /d needs libtorrent.
+```
 
-Verify install:
+---
 
-bash
+## ✅ Verify Installation
+
+Check the search dependencies:
+
+```bash
 python -c "import requests, bs4, rich; print('search deps OK')"
-python -c "import libtorrent; print('libtorrent', libtorrent.__version__)"
-Both should print without errors.
+```
 
-Usage
-Start the app
-bash
+Check `libtorrent`:
+
+```bash
+python -c "import libtorrent; print('libtorrent', libtorrent.__version__)"
+```
+
+---
+
+# ▶️ Usage
+
+Start the application:
+
+```bash
 python cli.py
+```
+
 You'll see:
 
-text
+```text
 ╭──────────────────────────────────────╮
 │ Torrent Searcher                     │
 │ commands: /s <query>  /src  /next    │
 │           /prev  /d <#>  /quit       │
 ╰──────────────────────────────────────╯
-> 
-The > is a prompt. Type a search query or a slash command.
+>
+```
 
-Basic search
-Type a query directly at the prompt — no /s needed:
+---
 
-text
+## 🔎 Search
+
+Type a query directly:
+
+```text
 > ubuntu 24.04 desktop
-The app fires every indexer in parallel. After 1–3 seconds:
+```
 
-text
-┌────┬──────────────────────────────────────────────────┬────────────┬────────┬────────┬────────────────┐
-│  # │ Name                                             │ Size       │      S │      L │ Src            │
-├────┼──────────────────────────────────────────────────┼────────────┼────────┼────────┼────────────────┤
-│  1 │ ubuntu-24.04.1-desktop-amd64.iso                 │ 5.7 GB     │   2841 │    312 │ TPB            │
-│  2 │ Ubuntu 24.04 LTS Desktop [official]              │ 5.8 GB     │   1204 │    156 │ BitSearch      │
-│  3 │ ubuntu-24.04-desktop-amd64.iso                   │ 5.7 GB     │    892 │     78 │ SolidTorrents  │
-│  … │ …                                                │ …          │      … │      … │ …              │
-└────┴──────────────────────────────────────────────────┴────────────┴────────┴────────┴────────────────┘
+The application searches enabled indexers in parallel and displays the results.
+
+Example:
+
+```text
+┌────┬──────────────────────────────────────────────┬──────────┬──────┬──────┬────────────────┐
+│ #  │ Name                                         │ Size     │ S    │ L    │ Src            │
+├────┼──────────────────────────────────────────────┼──────────┼──────┼──────┼────────────────┤
+│ 1  │ ubuntu-24.04.1-desktop-amd64.iso             │ 5.7 GB   │ 2841 │ 312  │ TPB            │
+│ 2  │ Ubuntu 24.04 LTS Desktop [official]          │ 5.8 GB   │ 1204 │ 156  │ BitSearch      │
+│ 3  │ ubuntu-24.04-desktop-amd64.iso               │ 5.7 GB   │ 892  │ 78   │ SolidTorrents  │
+└────┴──────────────────────────────────────────────┴──────────┴──────┴──────┴────────────────┘
+
 page 1 of 3 | 43 total
-# — result number, use it with /d
+```
 
-Name — torrent name
+### Result fields
 
-Size — total download size
+| Field  | Description    |
+| ------ | -------------- |
+| `#`    | Result number  |
+| `Name` | Torrent name   |
+| `Size` | Download size  |
+| `S`    | Seeders        |
+| `L`    | Leechers       |
+| `Src`  | Source indexer |
 
-S — seeders (green, higher is better)
+Results are sorted by seeders and deduplicated using the torrent infohash.
 
-L — leechers (red)
+---
 
-Src — which indexer found it
+# ⌨️ Commands
 
-Sorted by seeders, deduplicated by infohash (so the same torrent found by 3 indexers shows once).
+| Command      | Description                     |
+| ------------ | ------------------------------- |
+| `your query` | Search directly                 |
+| `/s <query>` | Search for a query              |
+| `/d <#>`     | Download a result               |
+| `/next`      | Next page                       |
+| `/prev`      | Previous page                   |
+| `/src`       | List enabled indexers           |
+| `/quit`      | Exit                            |
+| `/q`         | Exit                            |
+| `exit`       | Exit                            |
+| `Ctrl+C`     | Interrupt the current operation |
 
-Commands
-Command	What it does
-ubuntu 24.04	search (just type it)
-/d 3	download result #3
-/next	next 15 results
-/prev	previous page
-/src	list which indexers are enabled
-/quit (or /q, or exit)	exit the app
-Ctrl+C	force-quit if stuck
-Download a result
-text
+---
+
+# 📥 Downloading
+
+Select a result by its number:
+
+```text
 > /d 1
-You'll see:
+```
 
-text
+Example:
+
+```text
 downloading: ubuntu-24.04.1-desktop-amd64.iso
 from TPB | 5.7 GB | 2841 seeders
-downloading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.3% 2.4 GB 8.7 MB/s 0:04:12 peers:184 seeds:62
-The progress bar updates every 500ms: percentage, downloaded amount, live speed, ETA, peer count, seed count.
 
-When it finishes:
+downloading ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.3%
+2.4 GB  8.7 MB/s  ETA 0:04:12
+peers:184 seeds:62
+```
 
-text
+When complete:
+
+```text
 done: ubuntu-24.04.1-desktop-amd64.iso
 files in ./downloads
-Press Ctrl+C during download to abort and return to the prompt. The partial file stays in ./downloads/.
+```
 
-Where files go
-Everything lands in ./downloads/ relative to where you ran python cli.py. Create a downloads folder next to cli.py if it doesn't exist — the tool makes it automatically on first download.
+Downloads are stored in:
 
-To change the folder, edit cli.py line ~120:
+```text
+./downloads/
+```
 
-python
-download_dir = "./downloads"
-to whatever path you want.
+The directory is created automatically.
 
-Example session
-text
-> blender 4.2
-[results table, 15 rows]
-> /d 2
-downloading: Blender 4.2 LTS...
-[progress bar, ~2 min]
-done: Blender 4.2 LTS...
-> /next
-[results 16-30]
-> /d 18
-downloading: ...
-[progress]
-done.
-> /quit
-Troubleshooting
-"libtorrent not installed"
-You skipped step 4, or libtorrent failed to install. Run pip install libtorrent. On Python 3.12+, use 3.11 instead.
+---
 
-"no results"
-The indexer's site might be down, or the query is too specific. Try a shorter query. Check /src to see which indexers are enabled.
+# 🛠️ Troubleshooting
 
-"warn: TPB: HTTPSConnectionPool"
-The indexer is blocked in your region or temporarily offline. The other indexers still work — the warning is per-source, doesn't break the search.
+### `libtorrent not installed`
 
-Search works, download hangs at 0%
-The torrent has no active seeders. Go back to the results, pick one with more seeders. If all top results hang, the content is dead across the swarm.
+Install it manually:
 
-Download is slow
-Swarm-limited. Pick a torrent with 500+ seeders. The tool itself has no rate caps — if the swarm is fast, you'll get full speed.
+```bash
+pip install libtorrent
+```
 
-Port 6881 blocked
-Some ISPs or routers block the default BitTorrent port range. Edit download.py build_session() — change port=6881 to port=51413 (or any port in 49152–65535). Also enable UPnP on your router, which the tool already requests.
+If you're using Python 3.12+, switch to Python 3.11.
 
-Firewall prompt on first run
-Windows Defender Firewall will ask to allow Python to accept connections. Allow both private and public. Without this, incoming peers can't connect and you'll only get outbound connections — slower downloads.
+---
 
-Everything works but speeds are 100 KB/s on a popular torrent
-That's not the tool. Check:
+### No results
 
-Is your VPN throttling? Some VPNs cap P2P.
+Try a shorter or broader search query.
 
-Is your ISP throttling BitTorrent? Run the download without VPN for 30 seconds to compare.
+You can also check which indexers are enabled:
 
-Is the torrent actually popular? Check the seeder count in the results table.
+```text
+> /src
+```
 
-Tips
-Sort matters. Results are already sorted by seeders. #1 is almost always the fastest download.
+---
 
-Dedupe is real. The same Ubuntu ISO on TPB and BitSearch shows once, at #1 in the list, with combined seeder info.
+### Download stuck at 0%
 
-Public trackers = visible IP. Your IP is in the swarm. If that matters where you live, use a VPN. The tool has no built-in proxy — you'd bind a VPN adapter at the OS level or set proxy in build_session() settings.
+The torrent may have no active seeders or peers. Try another available result.
 
-Run the search first, then download. Searching is instant and free. Downloading commits bandwidth. You can search 20 queries, pick the best, then /d.
+---
 
-Uninstall
-bash
-# deactivate the venv
-deactivate
+### Slow download
 
-# delete the folder
-rm -rf torrent-search     # linux/mac
-rmdir /s torrent-search   # windows
-Nothing installs system-wide except Python itself, which you probably want anyway.
+BitTorrent speeds depend primarily on the swarm and your network.
 
-Want me to add this as a docs/INSTALL.md file in the repo, or paste it directly into the README? The README version is cleaner for a small project — one file, everything visible. If the README gets long, splitting install/usage into docs/ and linking from the README is the standard move. Which do you want?
+Check:
 
+* Seeder availability
+* Internet connection
+* Firewall settings
+* Router configuration
+* VPN performance
+* ISP traffic management
 
+---
+
+# 🔐 Privacy & Legal
+
+BitTorrent is a peer-to-peer protocol. Your IP address may be visible to other peers participating in the same swarm.
+
+This application does **not** provide anonymity or privacy protection.
+
+Use the software responsibly and comply with the laws applicable to you. Only download or distribute content you are legally permitted to access.
+
+---
+
+## 📄 License
+
+Add your project's license here.
+
+For example:
+
+```text
+MIT License
+```
+
+---
+
+**Built with Python 🐍**
