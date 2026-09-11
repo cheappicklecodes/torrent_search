@@ -54,8 +54,8 @@ On Windows, make sure **Add python.exe to PATH** is enabled during installation.
 ## 2. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/torrent-search.git
-cd torrent-search
+git clone https://github.com/cheappicklecodes/torrent_search
+cd torrent_search
 ```
 
 Alternatively, download the repository as a ZIP from GitHub and extract it.
