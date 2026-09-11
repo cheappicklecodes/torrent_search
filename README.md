@@ -10,10 +10,8 @@ Search multiple indexers in parallel, browse deduplicated results, and download 
 
 ## 📸 Screenshots
 
-### CLI Interface
-
 <p align="center">
-  <img src="screenshots/content.png" alt="Torrent Searcher CLI" width="700">
+  <img src="content.png" alt="Torrent Searcher CLI" width="700">
 </p>
 ## ✨ Features
 
