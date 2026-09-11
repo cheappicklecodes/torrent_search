@@ -300,9 +300,6 @@ Use the software responsibly and comply with the laws applicable to you. Only do
 
 ## 📄 License
 
-Add your project's license here.
-
-For example:
 
 ```text
 MIT License
